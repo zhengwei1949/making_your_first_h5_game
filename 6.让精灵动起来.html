@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./js/phaser.min.js"></script>
+</head>
+<body>
+    <script>
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+        function preload() {//preload用来加载一些资源
+            // console.log('preload');
+            game.load.image('sky', 'assets/sky.png');
+            game.load.image('ground', 'assets/platform.png');
+            game.load.image('star', 'assets/star.png');
+            game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+        }
+        //这里，我们开启了物理引擎，当然，这只是为了后面做准备。然后，我们创建了天空，大地和两个平板。大地和平板的位置定位，我们是通过坐标来进行的，大家可以仔细看一下图片大小及坐标位置的关系。其中，大地和两个平板都被加到了platforms这个组中，这个组我们为它启动了物理属性，然后我们设置了大地和两个平板是不能动的，这样他们就不会由于撞击被改变位置。
+        var platforms;
+        var player;
+        var cursors;
+        function create() {//create用来进行一些对象的创建及初始化
+            game.physics.startSystem(Phaser.Physics.ARCADE);//开启物理引擎
+            game.add.sprite(0, 0, 'sky');
+            platforms = game.add.group();
+            platforms.enableBody = true;
+            var ground = platforms.create(0, game.world.height - 64, 'ground');
+            ground.scale.setTo(2, 2);
+            ground.body.immovable = true;
+            var ledge = platforms.create(400, 400, 'ground');
+            ledge.body.immovable = true;
+            ledge = platforms.create(-150, 250, 'ground');
+            ledge.body.immovable = true;
+
+            //同样是通过game.add.sprite将精灵加入进来，但是大家仔细看看dude.png这张资源图片，这是一个帧动画序列，里面包含了小人左移和右移的动画帧。我们同样给它开启了物理属性，然后设置了它的弹性和重力。player.body.collideWorldBounds = true;这句话设置了它会与边界进行碰撞，这就是为什么小人落下的时候，到游戏区域边界就不会掉下去，大家可以把这句话注释掉再运行，看看会是什么情况。在这里，我们还为小人添加了两个动画，一个是向左移动，一个是向右移动，分别指定了响应的动画帧，这也是为后续的动画做准备。
+            player = game.add.sprite(32, game.world.height - 150, 'dude');
+            game.physics.arcade.enable(player);
+            player.body.bounce.y = 0.2;
+            player.body.gravity.y = 300;
+            player.body.collideWorldBounds = true;
+            player.animations.add('left', [0, 1, 2, 3], 10, true);
+            player.animations.add('right', [5, 6, 7, 8], 10, true);
+
+            cursors = game.input.keyboard.createCursorKeys();
+        }
+
+        function update() {//update就是游戏的主循环
+            console.log(cursors)
+            console.log('update');
+            //这句话表示，检测小人与platforms组的碰撞，而大地正是在platforms组中，这样，小人就不会穿过大地了。同样地，当小人与两个平板碰撞时，也不会穿过了。
+            game.physics.arcade.collide(player, platforms);
+
+            player.body.velocity.x = 0;
+            if (cursors.left.isDown) {
+                player.body.velocity.x = -150;
+                player.animations.play('left');
+            }
+            else if (cursors.right.isDown) {
+                player.body.velocity.x = 150;
+                player.animations.play('right');
+            }
+            else {
+                player.animations.stop();
+                player.frame = 4;
+            }
+            if (cursors.up.isDown && player.body.touching.down) {
+                player.body.velocity.y = -350;
+            }
+        }
+        //我们希望让小人在按下方向左键的时候，向左移动，按下方向右键的时候，向右移动，为了实现这一功能，我们又定义了一个cursors，我们通过cursors = game.input.keyboard.createCursorKeys();来获取系统的键盘输入对象。然后，我们在update中，通过cursors.left.isDown来判断用户是否按下了键盘左键，如果按下了，我们给小人设置一个速度，然后播放左移的动画，方向右键的逻辑是一样的。如果方向左键和右键都没有按下，那么我们就通过player.frame来设置小人停在第4帧。小人的跳跃是通过方向上键来实现的，但是这里有一个条件，就是小人在空中的时候，不允许跳跃，所以，加上了一个player.body.touching.down的判断条件。
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./js/phaser.min.js"></script>
+</head>
+<body>
+    <script>
+    //Phaser.CANVAS，Phaser.WEBGL，或Phaser.AUTO。这个是你想使用的渲染上下文。推荐的参数是Phaser.AUTO，它会自动尝试使用WebGL，如果浏览器或设备不支持它就会回滚成Canvas。
+    //第四个参数是一个空字符串，这个是你想插入Phaser创建的canvas元素的DOM元素的id。
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+        function preload() {//preload用来加载一些资源
+            // console.log('preload');
+            // game.load.audio('bg','bg.mp3') 加载音乐
+            game.load.image('sky', 'assets/sky.png');
+            game.load.image('ground', 'assets/platform.png');
+            game.load.image('star', 'assets/star.png');
+            game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+        }
+
+        function create() {//create用来进行一些对象的创建及初始化
+            console.log('create');
+            game.add.sprite(0,0,'star');
+        }
+
+        function update() {//update就是游戏的主循环
+            console.log('update');
+        }
+    </script>
+</body>
+</html>
