@@ -13,10 +13,19 @@
 <body>
 
 <script type="text/javascript">
+//我们使用Phaser.Game创建了game对象，我们后面的所有的东西都是要加载到game对象当中
+//800，600指的是我们的游戏的世界是800*600
+//第三个参数的值可以是：Phaser.CANVAS,Phaser.WEBGL,Phaser.AUTO 推荐大家使用Phaser.AUTO,这样默认会使用webGL的环境，如果不支持webGL会退化为canvas的环境
+//第四个参数和页面中的id元素相关联，我们这里默认是空的，意思是会自动加载到body当中
+//最后一个参数里有三个函数,preload,create,update，这块并不是必须的，一般正式的游戏会创建很多的场景state,然后这些函数会在每个场景当中，我们这个例子比较简单，所以，这块就只有一个默认的场景，函数全写在这块
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(
+    800, 600, Phaser.AUTO, '', 
+    { preload: preload, create: create, update: update }
+    );
 
 function preload() {
+    game.debug.text('hello world', 32, 32);
 }
 
 function create() {
